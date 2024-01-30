@@ -28,7 +28,7 @@ class WalletResource(Resource):
         
         user = UserModel.query.filter_by(login=data['login']).first()
         if not user:
-            return {'message': 'пользователь не найден'}, 400
+            return {'message': 'пользователь не найден'}, 404
 
         wallet = WalletModel(user_id=user.id, address=data['address'], net=data['net'])
         wallet.save_db()
@@ -43,12 +43,12 @@ class WalletResource(Resource):
         
         user = UserModel.query.filter_by(login=data['login']).first()
         if not user:
-            return {'message': 'пользователь не найден'}, 400
+            return {'message': 'пользователь не найден'}, 404
         
         wallet = WalletModel.query.filter(and_(WalletModel.address == data['address'], WalletModel.user_id == user.id)).first()
 
         if not wallet:
-            return {'message': 'кошелек не найден'}, 400
+            return {'message': 'кошелек не найден'}, 404
         
         if data['operation'] == 'addition':
             wallet.value += data['summ']
@@ -67,16 +67,16 @@ class WalletTransferResource(Resource):
 
         user = UserModel.query.filter_by(login=data['login']).first()
         if not user:
-            return {'message': 'пользователь не найден'}, 400
+            return {'message': 'пользователь не найден'}, 404
         
         from_address = WalletModel.query.filter(and_(WalletModel.address == data['from_address'], WalletModel.user_id == user.id)).first()
         to_address = WalletModel.query.filter_by(address=data['to_address']).first()
 
         if not from_address:
-            return {'message': 'кошелек отправителя не найден'}, 400
+            return {'message': 'кошелек отправителя не найден'}, 404
         
         if not to_address:
-            return {'message': 'кошелек получателя не найден'}, 400
+            return {'message': 'кошелек получателя не найден'}, 404
 
         if from_address.value < data['summ']:
             return {'message': 'недостаточно средств'}, 400
