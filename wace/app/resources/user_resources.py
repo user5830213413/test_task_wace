@@ -15,7 +15,7 @@ class UserRegisterResource(Resource):
             return {'message': 'логин и пароль обязательны'}, 400
         
         if UserModel.query.filter_by(login=data['login']).first():
-            return {'message': 'пользователь с таким логином уже существует'}, 400
+            return {'message': 'пользователь с таким логином уже существует'}, 409
         
         user = UserModel(login=data['login'], password=data['password']) #так же сделать хэш пароля но думаю тут нет смысла
         user.save_db()
@@ -28,7 +28,7 @@ class UserResource(Resource):
         user = UserModel.query.filter_by(id=user_id).first()
 
         if not user:
-            return {'message': 'пользователь не найден'}, 400
+            return {'message': 'пользователь не найден'}, 404
         
         if not data['login'] or not data['password']:
             return {'message': 'логин и пароль обязательны'}, 400
@@ -42,7 +42,7 @@ class UserResource(Resource):
     def delete(self, user_id):
         user = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return {'message': 'пользователь не найден'}, 400
+            return {'message': 'пользователь не найден'}, 404
         user.delete_db()
     
         return {'message': 'пользователь успешно удален'}, 200
